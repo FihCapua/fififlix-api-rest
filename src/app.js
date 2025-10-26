@@ -22,4 +22,9 @@ app.get('/movies', (request, response) => {
     response.status(200).json(movies);
 })
 
+app.post('/movies', (request, response) => {
+    movies.push(request.body);
+    response.status(201).send('Filme cadastrado com sucesso.')
+})
+
 export default app;
