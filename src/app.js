@@ -44,4 +44,10 @@ app.put('/movies/:id', (request, response) => {
     response.status(200).json(movies);
 })
 
+app.delete('/movies/:id', (request, response) => {
+    const index = movieSearch(request.params.id)
+    movies.splice(index, 1)
+    response.status(204).send("Filme excluído com sucesso.")
+})
+
 export default app;
