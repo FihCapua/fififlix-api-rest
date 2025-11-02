@@ -1,8 +1,7 @@
 import express from 'express';
 
 import connectDatabase from './config/dbconnect.js';
-
-import movie from './models/Movie.js';
+import routes from './routes/index.js';
 
 const connection = await connectDatabase();
 
@@ -15,16 +14,7 @@ connection.once("open", () => {
 })
 
 const app = express();
-app.use(express.json())
-
-app.get('/', (request, response) => {
-    response.status(200).send('Curso de Node.js');
-})
-
-app.get('/movies', async (request, response) => {
-    const listMovies = await movie.find({})
-    response.status(200).json(listMovies);
-})
+routes(app)
 
 app.get('/movies/:id', (request, response) => {
     const index = movieSearch(request.params.id);
@@ -33,7 +23,6 @@ app.get('/movies/:id', (request, response) => {
 
 app.post('/movies', (request, response) => {
     movie.push(request.body);
-    response.status(201).send('Filme cadastrado com sucesso.')
 })
 
 app.put('/movies/:id', (request, response) => {
