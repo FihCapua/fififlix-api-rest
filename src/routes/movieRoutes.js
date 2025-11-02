@@ -9,6 +9,8 @@ routes.get('/movies/:id', MovieController.movieListById);
 
 routes.post('/movies', MovieController.registerMovie);
 
-routes.put('movies/:id', MovieController.updateMovie);
+routes.put('/movies/:id', MovieController.updateMovie);
+
+routes.delete('/movies/:id', MovieController.deleteMovie)
 
 export default routes;

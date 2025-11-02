@@ -38,6 +38,16 @@ class MovieController {
             response.status(500).json({ message: `${error.message} - Falha na atualização do filme` })
         }
     }
+
+    static async deleteMovie (request, response) {
+        try {
+            const id = request.params.id
+            await movie.findByIdAndDelete(id)
+            response.status(200).json({ message: "Filme removido" });
+        } catch (error) {
+            response.status(500).json({ message: `${error.message} - Falha ao remover o filme` })
+        }
+    }
 }
 
 export default MovieController
