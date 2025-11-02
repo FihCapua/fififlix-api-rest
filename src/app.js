@@ -16,21 +16,6 @@ connection.once("open", () => {
 const app = express();
 routes(app)
 
-app.get('/movies/:id', (request, response) => {
-    const index = movieSearch(request.params.id);
-    response.status(200).json(movie[index])
-})
-
-app.post('/movies', (request, response) => {
-    movie.push(request.body);
-})
-
-app.put('/movies/:id', (request, response) => {
-    const index = movieSearch(request.params.id);
-    movie[index].title = request.body.title;
-    response.status(200).json(movie);
-})
-
 app.delete('/movies/:id', (request, response) => {
     const index = movieSearch(request.params.id)
     movie.splice(index, 1)
