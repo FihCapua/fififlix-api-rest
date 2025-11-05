@@ -16,10 +16,4 @@ connection.once("open", () => {
 const app = express();
 routes(app)
 
-app.delete('/movies/:id', (request, response) => {
-    const index = movieSearch(request.params.id)
-    movie.splice(index, 1)
-    response.status(204).send("Filme excluído com sucesso.")
-})
-
 export default app;
