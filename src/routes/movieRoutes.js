@@ -5,6 +5,7 @@ import MovieController from '../controllers/MovieController.js';
 const routes = express.Router();
 
 routes.get('/movies', MovieController.listMovies);
+routes.get('/movies/query', MovieController.findMoviesByQuery);
 routes.get('/movies/:id', MovieController.movieListById);
 
 routes.post('/movies', MovieController.registerMovie);

@@ -65,6 +65,24 @@ class MovieController {
             response.status(500).json({ message: `${error.message} - Falha ao remover o filme` })
         }
     }
+
+    static async findMoviesByQuery(request, response) {
+        try {
+            const { title, nationality, genre, director } = request.query;
+            let filter = {}
+
+            if (title) filter.title = { $regex: title, $options: "i" };
+            if (nationality) filter.nationality = { $regex: nationality, $options: "i" };
+            if (genre) filter.genre = { $regex: genre, $options: "i" };
+
+            if (director) filter["director.name"] = { $regex: director, $options: "i" };
+
+            const moviesList = await movie.find(filter)
+            response.status(200).json(moviesList)
+        } catch (error) {
+            response.status(500).json({ message: `${error.message} - Falha na requisição` })
+        }
+    }
 }
 
 export default MovieController
