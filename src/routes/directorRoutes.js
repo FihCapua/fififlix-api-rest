@@ -5,7 +5,7 @@ import DirectorController from "../controllers/DirectorController.js";
 const routes = express.Router();
 
 routes.get("/director", DirectorController.listDirectors);
-routes.get("/director/:id", DirectorController.directorListById);
+routes.get("/director/:id", DirectorController.listDirectorsById);
 
 routes.post("/director", DirectorController.registerDirector);
 

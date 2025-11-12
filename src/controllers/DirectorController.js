@@ -1,31 +1,43 @@
+import mongoose from "mongoose";
 import { director } from "../models/Director.js";
+import { sendResponse } from "../utils/sendResponse.js";
 
 class DirectorController {    
   static async listDirectors (request, response) {
     try {
       const listDirectors = await director.find({})
-      response.status(200).json(listDirectors);
+      sendResponse(response, 200, "Diretores encontrados", listDirectors);
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha na requisição` })
+      sendResponse(response, 500, `${error.message} - Falha na requisição`)
     }
   }
 
-  static async directorListById (request, response) {
+  static async listDirectorsById (request, response) {
     try {
       const id = request.params.id
       const foundDirector = await director.findById(id)
-      response.status(200).json(foundDirector);
+
+      if (foundDirector !== null) {
+        sendResponse(response, 200, "Diretor encontrado", foundDirector);
+      } else {
+        sendResponse(response, 404, "Id do diretor não localizado")
+      }
+
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha na requisição` })
+      if (error instanceof mongoose.Error.CastError) {
+        sendResponse(response, 400, "Um ou mais dados fornecidos estão incorretos")
+      } else {
+        sendResponse(response, 500, `${error.message} - Falha na requisição`)
+      }
     }
   }
 
   static async registerDirector (request, response) {
     try {
       const newDirector = await director.create(request.body)
-      response.status(201).json({ message: "Diretor criado com sucesso", director: newDirector })
+      sendResponse(response, 201, "Diretor criado com sucesso", newDirector)
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha ao cadastrar filme.` })
+      sendResponse(response, 500, `${error.message} - Falha ao cadastrar filme.`)
     }
   }
 
@@ -33,9 +45,9 @@ class DirectorController {
     try {
       const id = request.params.id
       await director.findByIdAndUpdate(id, request.body)
-      response.status(200).json({ message: "Diretor atualizado" });
+      sendResponse(response, 200, "Diretor atualizado");
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha na atualização do filme` })
+      sendResponse(response, 500, `${error.message} - Falha na atualização do filme`)
     }
   }
 
@@ -43,9 +55,9 @@ class DirectorController {
     try {
       const id = request.params.id
       await director.findByIdAndDelete(id)
-      response.status(200).json({ message: "Diretor removido" });
+      sendResponse(response, 200, "Diretor removido");
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha ao remover o filme` })
+      sendResponse(response, 500, `${error.message} - Falha ao remover o filme`)
     }
   }
 }

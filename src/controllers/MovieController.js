@@ -1,13 +1,14 @@
 import { director } from "../models/Director.js";
 import movie from "../models/Movie.js";
+import { sendResponse } from "../utils/sendResponse.js";
 
 class MovieController {    
   static async listMovies (request, response) {
     try {
       const listMovies = await movie.find({})
-      response.status(200).json(listMovies);
+      sendResponse(response, 200, "Filmes encontrados", listMovies);
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha na requisição` })
+      sendResponse(response, 500, `${error.message} - Falha na requisição`)
     }
   }
 
@@ -15,9 +16,14 @@ class MovieController {
     try {
       const id = request.params.id
       const foundMovie = await movie.findById(id)
-      response.status(200).json(foundMovie);
+
+      if (foundMovie !== null) {
+        sendResponse(response, 200, "Filme encontrado", foundMovie);
+      } else {
+        sendResponse(response, 404, "Id do filme não localizado")
+      }
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha na requisição` })
+      sendResponse(response, 500, `${error.message} - Falha na requisição`)
     }
   }
 
@@ -25,14 +31,21 @@ class MovieController {
     const newMovie = request.body
 
     try {
-      const directorFound = await director.findById(newMovie.director)
+      let fullMovie = { ...newMovie };
 
-      const fullMovie = { ...newMovie, director: { ...directorFound._doc } }
+      if (newMovie.director) {
+        const directorFound = await director.findById(newMovie.director);
+      
+        if (directorFound) {
+          fullMovie = { ...newMovie, director: { ...directorFound._doc } };
+        }
+      }
+
       const movieCreated = await movie.create(fullMovie);
 
-      response.status(201).json({ message: "Filme criado com sucesso", movie: movieCreated })
+      sendResponse(response, 201, "Filme criado com sucesso", movieCreated) 
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha ao cadastrar filme.` })
+      sendResponse(response, 500, `${error.message} - Falha ao cadastrar filme.`)
     }
   }
 
@@ -41,18 +54,21 @@ class MovieController {
       const id = request.params.id
       const movieData = request.body
 
+      let fullMovie = { ...movieData };
+
       if (movieData.director) {
         const directorFound = await director.findById(movieData.director)
-        const fullMovie = { ...movieData, director: { ...directorFound._doc } }
-
-        await movie.findByIdAndUpdate(id, fullMovie)
-      } else {
-        await movie.findByIdAndUpdate(id, movieData)
+      
+        if (directorFound) {
+          fullMovie = { ...movieData, director: { ...directorFound._doc } };
+        }
       }
-            
-      response.status(200).json({ message: "Filme atualizado" });
+
+      await movie.findByIdAndUpdate(id, fullMovie)
+          
+      sendResponse(response, 200, "Filme atualizado")
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha na atualização do filme` })
+      sendResponse(response, 500, `${error.message} - Falha na atualização do filme`)
     }
   }
 
@@ -60,9 +76,9 @@ class MovieController {
     try {
       const id = request.params.id
       await movie.findByIdAndDelete(id)
-      response.status(200).json({ message: "Filme removido" });
+      sendResponse(response, 200, "Filme removido")
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha ao remover o filme` })
+      sendResponse(response, 500, `${error.message} - Falha ao remover o filme`)
     }
   }
 
@@ -74,13 +90,19 @@ class MovieController {
       if (title) filter.title = { $regex: title, $options: "i" };
       if (nationality) filter.nationality = { $regex: nationality, $options: "i" };
       if (genre) filter.genre = { $regex: genre, $options: "i" };
-
       if (director) filter["director.name"] = { $regex: director, $options: "i" };
 
       const moviesList = await movie.find(filter)
-      response.status(200).json(moviesList)
+
+      if (moviesList.length === 0) {
+        return sendResponse(response, 200, "Nenhum filme encontrado", [])
+      }
+
+      const moviesListLengthWord = moviesList.length > 1 ? "Filmes encontrados" : "Filme encontrado"
+
+      return sendResponse(response, 200, moviesListLengthWord, moviesList)
     } catch (error) {
-      response.status(500).json({ message: `${error.message} - Falha na requisição` })
+      sendResponse(response, 500, `${error.message} - Falha na requisição`)
     }
   }
 }
