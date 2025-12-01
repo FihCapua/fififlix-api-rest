@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { director } from "../models/Director.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
@@ -12,7 +11,7 @@ class DirectorController {
     }
   }
 
-  static async listDirectorsById (request, response) {
+  static async listDirectorsById (request, response, next) {
     try {
       const id = request.params.id
       const foundDirector = await director.findById(id)
@@ -24,40 +23,36 @@ class DirectorController {
       }
 
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        sendResponse(response, 400, "Um ou mais dados fornecidos estão incorretos")
-      } else {
-        sendResponse(response, 500, `${error.message} - Falha na requisição`)
-      }
+      next(error)
     }
   }
 
-  static async registerDirector (request, response) {
+  static async registerDirector (request, response, next) {
     try {
       const newDirector = await director.create(request.body)
       sendResponse(response, 201, "Diretor criado com sucesso", newDirector)
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha ao cadastrar filme.`)
+      next(error)
     }
   }
 
-  static async updateDirector (request, response) {
+  static async updateDirector (request, response, next) {
     try {
       const id = request.params.id
       await director.findByIdAndUpdate(id, request.body)
       sendResponse(response, 200, "Diretor atualizado");
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha na atualização do filme`)
+      next(error)
     }
   }
 
-  static async deleteDirector (request, response) {
+  static async deleteDirector (request, response, next) {
     try {
       const id = request.params.id
       await director.findByIdAndDelete(id)
       sendResponse(response, 200, "Diretor removido");
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha ao remover o filme`)
+      next(error)
     }
   }
 }

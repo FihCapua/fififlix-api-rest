@@ -3,16 +3,16 @@ import movie from "../models/Movie.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
 class MovieController {    
-  static async listMovies (request, response) {
+  static async listMovies (request, response, next) {
     try {
       const listMovies = await movie.find({})
       sendResponse(response, 200, "Filmes encontrados", listMovies);
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha na requisição`)
+      next(error)
     }
   }
 
-  static async movieListById (request, response) {
+  static async movieListById (request, response, next) {
     try {
       const id = request.params.id
       const foundMovie = await movie.findById(id)
@@ -23,11 +23,11 @@ class MovieController {
         sendResponse(response, 404, "Id do filme não localizado")
       }
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha na requisição`)
+      next(error)
     }
   }
 
-  static async registerMovie (request, response) {
+  static async registerMovie (request, response, next) {
     const newMovie = request.body
 
     try {
@@ -45,11 +45,11 @@ class MovieController {
 
       sendResponse(response, 201, "Filme criado com sucesso", movieCreated) 
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha ao cadastrar filme.`)
+      next(error)
     }
   }
 
-  static async updateMovie (request, response) {
+  static async updateMovie (request, response, next) {
     try {
       const id = request.params.id
       const movieData = request.body
@@ -68,21 +68,21 @@ class MovieController {
           
       sendResponse(response, 200, "Filme atualizado")
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha na atualização do filme`)
+      next(error)
     }
   }
 
-  static async deleteMovie (request, response) {
+  static async deleteMovie (request, response, next) {
     try {
       const id = request.params.id
       await movie.findByIdAndDelete(id)
       sendResponse(response, 200, "Filme removido")
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha ao remover o filme`)
+      next(error)
     }
   }
 
-  static async findMoviesByQuery(request, response) {
+  static async findMoviesByQuery(request, response, next) {
     try {
       const { title, nationality, genre, director } = request.query;
       let filter = {}
@@ -102,7 +102,7 @@ class MovieController {
 
       return sendResponse(response, 200, moviesListLengthWord, moviesList)
     } catch (error) {
-      sendResponse(response, 500, `${error.message} - Falha na requisição`)
+      next(error)
     }
   }
 }
