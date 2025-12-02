@@ -4,8 +4,14 @@ import { directorSchema } from "./Director.js";
 
 const movieSchema = new mongoose.Schema({
   id: { type: mongoose.Schema.Types.ObjectId },
-  title: { type: String, required: true },
-  coverImage: { type: String, required: true },
+  title: { 
+    type: String, 
+    required: [true, "Título do filme é obrigatório"] 
+  },
+  coverImage: { 
+    type: String, 
+    required: [true, "Imagem de capa do filme é obrigatório"] 
+  },
   genre: { type: String },
   writer: { type: String },
   mainActors: { type: String },
