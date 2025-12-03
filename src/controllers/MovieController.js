@@ -64,9 +64,14 @@ class MovieController {
         }
       }
 
-      await movie.findByIdAndUpdate(id, fullMovie)
+      const foundMovie = await movie.findByIdAndUpdate(id, fullMovie)
+
+      if (foundMovie !== null) {
+        sendResponse(response, 200, "Filme atualizado")
+      } else {
+        sendResponse(response, 404, "Id do filme não localizado")
+      }
           
-      sendResponse(response, 200, "Filme atualizado")
     } catch (error) {
       next(error)
     }
@@ -75,8 +80,13 @@ class MovieController {
   static async deleteMovie (request, response, next) {
     try {
       const id = request.params.id
-      await movie.findByIdAndDelete(id)
-      sendResponse(response, 200, "Filme removido")
+      const foundMovie = await movie.findByIdAndDelete(id)
+
+      if (foundMovie !== null) {
+        sendResponse(response, 200, "Filme removido")
+      } else {
+        sendResponse(response, 404, "Id do filme não localizado")
+      }
     } catch (error) {
       next(error)
     }

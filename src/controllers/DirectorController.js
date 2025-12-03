@@ -39,8 +39,13 @@ class DirectorController {
   static async updateDirector (request, response, next) {
     try {
       const id = request.params.id
-      await director.findByIdAndUpdate(id, request.body)
-      sendResponse(response, 200, "Diretor atualizado");
+      const foundDirector = await director.findByIdAndUpdate(id, request.body)
+
+      if (foundDirector !== null) {
+        sendResponse(response, 200, "Diretor atualizado");
+      } else {
+        sendResponse(response, 404, "Id do diretor não localizado")
+      }
     } catch (error) {
       next(error)
     }
@@ -49,8 +54,14 @@ class DirectorController {
   static async deleteDirector (request, response, next) {
     try {
       const id = request.params.id
-      await director.findByIdAndDelete(id)
-      sendResponse(response, 200, "Diretor removido");
+
+      const foundDirector = await director.findByIdAndDelete(id)
+
+      if (foundDirector !== null) {
+        sendResponse(response, 200, "Diretor removido");
+      } else {
+        sendResponse(response, 404, "Id do diretor não localizado")
+      }
     } catch (error) {
       next(error)
     }
