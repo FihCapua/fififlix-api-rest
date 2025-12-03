@@ -17,7 +17,11 @@ const movieSchema = new mongoose.Schema({
   mainActors: { type: String },
   nationality: { type: String },
   releaseDate: { type: Date },
-  rating: { type: Number },
+  rating: { 
+    type: Number,
+    min: [0, "O valor de avaliação do filme deve estar entre 0 e 5"],
+    max: [5, "O valor de avaliação do filme deve estar entre 0 e 5"]
+  },
   comment: { type: String },
   director: directorSchema
 }, { versionKey: false });
