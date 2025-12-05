@@ -19,8 +19,12 @@ const movieSchema = new mongoose.Schema({
   releaseDate: { type: Date },
   rating: { 
     type: Number,
-    min: [0, "O valor de avaliação do filme deve estar entre 0 e 5"],
-    max: [5, "O valor de avaliação do filme deve estar entre 0 e 5"]
+    validate: {
+      validator: (value) => {
+        return value >= 0 && value <= 5
+      },
+      message: "O valor de avaliação do filme deve estar entre 0 e 5. Valor fornecido {VALUE}"
+    }
   },
   comment: { type: String },
   director: directorSchema

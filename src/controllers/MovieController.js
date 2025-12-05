@@ -64,7 +64,10 @@ class MovieController {
         }
       }
 
-      const foundMovie = await movie.findByIdAndUpdate(id, fullMovie)
+      const foundMovie = await movie.findByIdAndUpdate(id, fullMovie, {
+        new: true,
+        runValidators: true
+      })
 
       if (foundMovie !== null) {
         sendResponse(response, 200, "Filme atualizado")
