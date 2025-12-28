@@ -96,26 +96,33 @@ class MovieController {
   }
 
   static async findMoviesByQuery(request, response, next) {
-    try {
-      const { title, nationality, genre, director } = request.query;
-      let filter = {}
+    try {        
+      const searchFields = {
+        title: "title",
+        nationality: "nationality", 
+        genre: "genre",
+        director: "director.name"
+      };
 
-      if (title) filter.title = { $regex: title, $options: "i" };
-      if (nationality) filter.nationality = { $regex: nationality, $options: "i" };
-      if (genre) filter.genre = { $regex: genre, $options: "i" };
-      if (director) filter["director.name"] = { $regex: director, $options: "i" };
+      const filter = {};
 
-      const moviesList = await movie.find(filter)
-
-      if (moviesList.length === 0) {
-        return sendResponse(response, 200, "Nenhum filme encontrado", [])
+      for (const [param, field] of Object.entries(searchFields)) {
+        if (request.query[param]) {
+          filter[field] = { $regex: request.query[param], $options: "i" };
+        }
       }
 
-      const moviesListLengthWord = moviesList.length > 1 ? "Filmes encontrados" : "Filme encontrado"
+      const moviesList = await movie.find(filter);
 
-      return sendResponse(response, 200, moviesListLengthWord, moviesList)
+      if (moviesList.length === 0) {
+        return sendResponse(response, 200, "Nenhum filme encontrado", []);
+      }
+
+      const moviesListLengthWord = moviesList.length > 1 ? "Filmes encontrados" : "Filme encontrado";
+
+      return sendResponse(response, 200, moviesListLengthWord, moviesList);
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 }
