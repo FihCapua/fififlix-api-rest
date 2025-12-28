@@ -112,6 +112,15 @@ class MovieController {
         }
       }
 
+      const { minYear, maxYear } = request.query;
+
+      if (minYear || maxYear) {
+        filter.releaseDate = {};
+  
+        if (minYear) filter.releaseDate.$gte = new Date(`${minYear}-01-01`);
+        if (maxYear) filter.releaseDate.$lte = new Date(`${maxYear}-12-31`);
+      }
+
       const moviesList = await movie.find(filter);
 
       if (moviesList.length === 0) {
