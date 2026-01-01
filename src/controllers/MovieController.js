@@ -5,7 +5,21 @@ import { sendResponse } from "../utils/sendResponse.js";
 class MovieController {    
   static async listMovies (request, response, next) {
     try {
-      const listMovies = await movie.find({})
+      const { limit, page } = request.query;
+
+      let query = movie.find({})
+
+      if (limit || page) {
+        const parsedLimit = Math.min(100, Math.max(1, parseInt(limit) || 10));
+        const parsedPage = Math.max(1, parseInt(page) || 1);
+
+        query = query
+          .skip((parsedPage - 1) * parsedLimit)
+          .limit(parsedLimit)
+      }
+      
+      const listMovies = await query
+
       sendResponse(response, 200, "Filmes encontrados", listMovies);
     } catch (error) {
       next(error)
