@@ -5,9 +5,12 @@ import { sendResponse } from "../utils/sendResponse.js";
 class MovieController {    
   static async listMovies (request, response, next) {
     try {
-      const { limit, page } = request.query;
+      const { limit, page, ordered = "_id:-1" } = request.query;
 
-      let query = movie.find({})
+      const [field, direction] = ordered.split(":")
+      const sortOrder = parseInt(direction) === 1 ? 1 : -1
+
+      let query = movie.find({}).sort({ [field]: sortOrder })
 
       if (limit || page) {
         const parsedLimit = Math.min(100, Math.max(1, parseInt(limit) || 10));
