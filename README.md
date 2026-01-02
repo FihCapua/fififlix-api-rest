@@ -279,10 +279,10 @@ Seguimos o [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/
 - test: - Testes
 - chore: - Tarefas de manutenção
 
-#### 📄 Licença
+### 📄 Licença
 Este projeto está sob a licença ISC.
 
-#### 👤 Autor
+### 👤 Autor
 Desenvolvido como projeto de estudos de Node.js, Express e MongoDB.
 
 ⭐ Se este projeto foi útil, considere dar uma estrela!
