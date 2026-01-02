@@ -5,25 +5,11 @@ import { sendResponse } from "../utils/sendResponse.js";
 class MovieController {    
   static async listMovies (request, response, next) {
     try {
-      const { limit, page, ordered = "_id:-1" } = request.query;
+      const findMovies = movie.find()
 
-      const [field, direction] = ordered.split(":")
-      const sortOrder = parseInt(direction) === 1 ? 1 : -1
-
-      let query = movie.find({}).sort({ [field]: sortOrder })
-
-      if (limit || page) {
-        const parsedLimit = Math.min(100, Math.max(1, parseInt(limit) || 10));
-        const parsedPage = Math.max(1, parseInt(page) || 1);
-
-        query = query
-          .skip((parsedPage - 1) * parsedLimit)
-          .limit(parsedLimit)
-      }
-      
-      const listMovies = await query
-
-      sendResponse(response, 200, "Filmes encontrados", listMovies);
+      request.result = findMovies
+ 
+      next()
     } catch (error) {
       next(error)
     }
@@ -138,15 +124,11 @@ class MovieController {
         if (maxYear) filter.releaseDate.$lte = new Date(`${maxYear}-12-31`);
       }
 
-      const moviesList = await movie.find(filter);
+      const findMovies = movie.find(filter)
 
-      if (moviesList.length === 0) {
-        return sendResponse(response, 200, "Nenhum filme encontrado", []);
-      }
+      request.result = findMovies
 
-      const moviesListLengthWord = moviesList.length > 1 ? "Filmes encontrados" : "Filme encontrado";
-
-      return sendResponse(response, 200, moviesListLengthWord, moviesList);
+      next()
     } catch (error) {
       next(error);
     }

@@ -2,10 +2,13 @@ import { director } from "../models/Director.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
 class DirectorController {    
-  static async listDirectors (request, response) {
+  static async listDirectors (request, response, next) {
     try {
-      const listDirectors = await director.find({})
-      sendResponse(response, 200, "Diretores encontrados", listDirectors);
+      const findDirectors = director.find({})
+
+      request.result = findDirectors
+      
+      next()
     } catch (error) {
       sendResponse(response, 500, `${error.message} - Falha na requisição`)
     }
